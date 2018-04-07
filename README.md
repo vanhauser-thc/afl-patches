@@ -16,5 +16,5 @@ afl_qemu_optimize_entrypoint.diff	- afl-qemu: fixes entrypoint detection for ARM
 
 afl_qemu_optimize_logconditional.diff	- afl-qemu: only log destinations of calls and conditional jumps. patch is only for INTEL and ARM. makes it a bit slower but helpful for large targets that fill up the map otherwise (by mh(at)mh-sec(dot)de)
 
-afl_qemu_optimize_map.diff		- afl-qemu: removes 2 intstructions from afl_log at a cost of 64kb.  (by mh(at)mh-sec(dot)de)
+afl_qemu_optimize_map.diff		- afl-qemu: removes 2 instructions from afl_log at a cost of 64kb.  (by mh(at)mh-sec(dot)de)
 
