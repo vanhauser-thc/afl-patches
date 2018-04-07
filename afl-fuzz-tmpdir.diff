@@ -1,0 +1,66 @@
+--- docs/env_variables.txt.orig	2018-02-20 09:36:08.498883127 +0100
++++ docs/env_variables.txt	2018-02-20 09:35:54.292533925 +0100
+@@ -130,6 +130,11 @@
+     by some users for unorthodox parallelized fuzzing setups, but not
+     advisable otherwise.
+ 
++  - AFL_TMPDIR is used to write the .cur_input file to if exists, and in
++    the normal output directory otherwise. You would use this to point to
++    a ramdisk/tmpfs. This increases the speed by a very minimal value but
++    also reduces the stress on SSDs.
++
+   - When developing custom instrumentation on top of afl-fuzz, you can use
+     AFL_SKIP_BIN_CHECK to inhibit the checks for non-instrumented binaries
+     and shell scripts; and AFL_DUMB_FORKSRV in conjunction with the -n
+--- afl-fuzz.c.orig	2018-02-20 09:19:59.125737935 +0100
++++ afl-fuzz.c	2018-02-20 09:33:06.858964160 +0100
+@@ -83,6 +83,7 @@
+ EXP_ST u8 *in_dir,                    /* Input directory with test cases  */
+           *out_file,                  /* File to fuzz, if any             */
+           *out_dir,                   /* Working & output directory       */
++          *tmp_dir       ,            /* Temporary directory for input    */
+           *sync_dir,                  /* Synchronization directory        */
+           *sync_id,                   /* Fuzzer ID                        */
+           *use_banner,                /* Display banner                   */
+@@ -3821,7 +3822,7 @@
+ 
+   /* And now, for some finishing touches. */
+ 
+-  fn = alloc_printf("%s/.cur_input", out_dir);
++  fn = alloc_printf("%s/.cur_input", tmp_dir);
+   if (unlink(fn) && errno != ENOENT) goto dir_cleanup_failed;
+   ck_free(fn);
+ 
+@@ -7204,7 +7205,7 @@
+ 
+ EXP_ST void setup_stdio_file(void) {
+ 
+-  u8* fn = alloc_printf("%s/.cur_input", out_dir);
++  u8* fn = alloc_printf("%s/.cur_input", tmp_dir);
+ 
+   unlink(fn); /* Ignore errors */
+ 
+@@ -7526,7 +7527,7 @@
+       /* If we don't have a file name chosen yet, use a safe default. */
+ 
+       if (!out_file)
+-        out_file = alloc_printf("%s/.cur_input", out_dir);
++        out_file = alloc_printf("%s/.cur_input", tmp_dir);
+ 
+       /* Be sure that we're always using fully-qualified paths. */
+ 
+@@ -7907,6 +7908,14 @@
+   if (!strcmp(in_dir, out_dir))
+     FATAL("Input and output directories can't be the same");
+ 
++  if ((tmp_dir = getenv("AFL_TMPDIR")) != NULL) {
++    char tmpfile[strlen(tmp_dir + 16)];
++    sprintf(tmpfile, "%s/%s", tmp_dir, ".cur_input");
++    if (access(tmpfile, F_OK) != -1) // there is still a race condition here, but well ...
++      FATAL("TMP_DIR already has an existing temporary input file: %s", tmpfile);
++  } else
++    tmp_dir = out_dir;
++
+   if (dumb_mode) {
+ 
+     if (crash_mode) FATAL("-C and -n are mutually exclusive");

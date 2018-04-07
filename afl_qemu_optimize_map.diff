@@ -1,0 +1,39 @@
+--- ./patches/afl-qemu-cpu-inl.h.orig	2018-04-03 13:15:47.239442416 +0200
++++ ./patches/afl-qemu-cpu-inl.h	2018-04-03 13:42:05.663936006 +0200
+@@ -61,7 +63,8 @@
+ 
+ /* This is equivalent to afl-as.h: */
+ 
+-static unsigned char *afl_area_ptr;
++static unsigned char dummy[65536];
++static unsigned char *afl_area_ptr = dummy;
+ 
+ /* Exported variables populated by the code patched into elfload.c: */
+ 
+@@ -158,12 +161,14 @@
+ 
+ 
+ /* Fork server logic, invoked once we hit _start. */
+-
++static int forkserver_installed = 0;
+ static void afl_forkserver(CPUState *cpu) {
+-
+   static unsigned char tmp[4];
+ 
+-  if (!afl_area_ptr) return;
++  if (forkserver_installed == 1)
++    return;
++  forkserver_installed = 1;
++  //if (!afl_area_ptr) return;
+ 
+   /* Tell the parent that we're alive. If the parent doesn't want
+      to talk, assume that we're not running in forkserver mode. */
+@@ -233,7 +238,7 @@
+   /* Optimize for cur_loc > afl_end_code, which is the most likely case on
+      Linux systems. */
+ 
+-  if (cur_loc > afl_end_code || cur_loc < afl_start_code || !afl_area_ptr)
++  if (cur_loc > afl_end_code || cur_loc < afl_start_code /*|| !afl_area_ptr*/)
+     return;
+ 
+   /* Looks like QEMU always maps to fixed locations, so ASAN is not a

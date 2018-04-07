@@ -1,0 +1,139 @@
+--- ./patches/afl-qemu-cpu-inl.h.orig	2018-04-03 13:15:47.239442416 +0200
++++ ./patches/afl-qemu-cpu-inl.h	2018-04-03 13:42:05.663936006 +0200
+@@ -46,12 +46,14 @@
+    _start and does the usual forkserver stuff, not very different from
+    regular instrumentation injected via afl-as.h. */
+ 
++unsigned int afl_do_log_next = 0;
+ #define AFL_QEMU_CPU_SNIPPET2 do { \
+     if(itb->pc == afl_entry_point) { \
+       afl_setup(); \
+       afl_forkserver(cpu); \
+     } \
+-    afl_maybe_log(itb->pc); \
++    if (afl_do_log_next == 1) { afl_maybe_log(itb->pc); afl_do_log_next = 0 ; } \
++    if (itb->log_next == 1) afl_do_log_next = 1; \
+   } while (0)
+ 
+ /* We use one additional file descriptor to relay "needs translation"
+--- ./qemu-2.10.0/target/arm/translate.h.orig	2018-04-03 13:34:29.559618756 +0200
++++ ./qemu-2.10.0/target/arm/translate.h	2018-04-03 13:34:43.815874490 +0200
+@@ -67,6 +67,7 @@
+ #define TMP_A64_MAX 16
+     int tmp_a64_count;
+     TCGv_i64 tmp_a64[TMP_A64_MAX];
++    int has_link;
+ } DisasContext;
+ 
+ typedef struct DisasCompare {
+--- ./qemu-2.10.0/target/arm/translate.c.orig	2018-04-03 13:22:42.906930362 +0200
++++ ./qemu-2.10.0/target/arm/translate.c	2018-04-03 13:35:36.076811919 +0200
+@@ -8239,6 +8239,7 @@
+             val += 4;
+             /* protected by ARCH(5); above, near the start of uncond block */
+             gen_bx_im(s, val);
++            s->has_link = 1;
+             return;
+         } else if ((insn & 0x0e000f00) == 0x0c000100) {
+             if (arm_dc_feature(s, ARM_FEATURE_IWMMXT)) {
+@@ -8408,6 +8409,7 @@
+             tcg_gen_movi_i32(tmp2, s->pc);
+             store_reg(s, 14, tmp2);
+             gen_bx(s, tmp);
++            s->has_link = 1;
+             break;
+         case 0x4:
+         {
+@@ -9546,6 +9548,7 @@
+                 offset = sextract32(insn << 2, 0, 26);
+                 val += offset + 4;
+                 gen_jmp(s, val);
++                s->has_link = 1;
+             }
+             break;
+         case 0xc:
+@@ -10447,6 +10450,7 @@
+                 if (insn & (1 << 14)) {
+                     /* Branch and link.  */
+                     tcg_gen_movi_i32(cpu_R[14], s->pc | 1);
++                    s->has_link = 1;
+                 }
+ 
+                 offset += s->pc;
+@@ -11169,6 +11173,7 @@
+                     tcg_gen_movi_i32(tmp2, val);
+                     store_reg(s, 14, tmp2);
+                     gen_bx(s, tmp);
++                    s->has_link = 1;
+                 } else {
+                     /* Only BX works as exception-return, not BLX */
+                     gen_bx_excret(s, tmp);
+@@ -12013,11 +12018,14 @@
+             disas_arm_insn(dc, insn);
+         }
+ 
++        if (dc->condjmp || dc->has_link == 1)
++          tb->log_next = 1;
++
+         if (dc->condjmp && !dc->is_jmp) {
+             gen_set_label(dc->condlabel);
+             dc->condjmp = 0;
+         }
+-
++        
+         if (tcg_check_temp_count()) {
+             fprintf(stderr, "TCG temporary leak before "TARGET_FMT_lx"\n",
+                     dc->pc);
+--- ./qemu-2.10.0/target/i386/translate.c.orig	2018-04-03 12:59:07.877326731 +0200
++++ ./qemu-2.10.0/target/i386/translate.c	2018-04-03 13:41:44.899555380 +0200
+@@ -138,6 +138,7 @@
+     int cpuid_ext3_features;
+     int cpuid_7_0_ebx_features;
+     int cpuid_xsave_features;
++    int have_jcc;
+ } DisasContext;
+ 
+ static void gen_eob(DisasContext *s);
+@@ -4431,6 +4432,7 @@
+     s->pc_start = s->pc = pc_start;
+     prefixes = 0;
+     s->override = -1;
++    s->have_jcc = 0;
+     rex_w = -1;
+     rex_r = 0;
+ #ifdef TARGET_X86_64
+@@ -5017,6 +5019,7 @@
+             }
+             tcg_gen_ld_tl(cpu_tmp4, cpu_env, offsetof(CPUX86State, eip));
+             gen_jr(s, cpu_tmp4);
++            s->have_jcc = 1;
+             break;
+         case 4: /* jmp Ev */
+             if (dflag == MO_16) {
+@@ -6496,6 +6499,7 @@
+             gen_push_v(s, cpu_T0);
+             gen_bnd_jmp(s);
+             gen_jmp(s, tval);
++            s->have_jcc = 1;
+         }
+         break;
+     case 0x9a: /* lcall im */
+@@ -8491,6 +8495,8 @@
+         }
+ 
+         pc_ptr = disas_insn(env, dc, pc_ptr);
++        if (dc->have_jcc)
++          tb->log_next = 1;
+         /* stop translation if indicated */
+         if (dc->is_jmp)
+             break;
+--- ./qemu-2.10.0/include/exec/exec-all.h.orig	2018-04-03 13:06:11.360979778 +0200
++++ ./qemu-2.10.0/include/exec/exec-all.h	2018-04-03 13:05:58.996753068 +0200
+@@ -395,6 +395,7 @@
+      */
+     uintptr_t jmp_list_next[2];
+     uintptr_t jmp_list_first;
++    uint32_t log_next;
+ };
+ 
+ void tb_free(TranslationBlock *tb);
