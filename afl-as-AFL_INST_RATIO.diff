@@ -1,0 +1,12 @@
+--- afl-2.52b/afl-as.c.old	2018-02-11 22:05:48.636563804 +0100
++++ afl-2.52b/afl-as.c	2018-02-11 22:07:04.035919083 +0100
+@@ -525,7 +525,8 @@ int main(int argc, char** argv) {
+ 
+   if (getenv("AFL_USE_ASAN") || getenv("AFL_USE_MSAN")) {
+     sanitizer = 1;
+-    inst_ratio /= 3;
++    if (!getenv("AFL_INST_RATIO"))
++      inst_ratio /= 3;
+   }
+ 
+   if (!just_version) add_instrumentation();

@@ -18,3 +18,5 @@ Patches to afl to fix bugs or add enhancements
 
 **afl_qemu_optimize_map.diff**			- afl-qemu: removes 2 instructions from afl_log at a cost of 64kb.  (by mh(at)mh-sec(dot)de)
 
+**afl-as-AFL_INST_RATIO.diff**			- afl-afl: do not divise by 3 with sanitizer if AFL_INST_RATIO is manually set.  (by legarrec(dot)vincent(at)gmail(dot)com)
+
