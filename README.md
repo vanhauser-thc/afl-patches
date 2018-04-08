@@ -1,11 +1,17 @@
 # afl-patches
 Patches to afl to fix bugs or add enhancements
 
+
+## Introduction
+
+All patches are for the current version afl2.52b and can be applied in the extracted afl directory (-p0).
+
+
 ## Patches
 
 ### Fixes
 
-**afl-llvm-fix.diff**	- aflc-lang: fix to afl llvm for SIGCHLD in the forkserver (by Kuang-che Wu <kcwu(at)csie(dot)org>)
+**afl-llvm-fix.diff**		- aflc-lang: fix to afl llvm for SIGCHLD in the forkserver (by Kuang-che Wu <kcwu(at)csie(dot)org>)
 
 **afl-sort-all_uniq-fix.diff**	- afl-cmin: fix sort (by legarrec(dot)vincent(at)gmail(dot)com)
 
@@ -22,5 +28,5 @@ Patches to afl to fix bugs or add enhancements
 
 **afl-as-AFL_INST_RATIO.diff**			- afl-afl: do not divise by 3 with sanitizer if AFL_INST_RATIO is manually set.  (by legarrec(dot)vincent(at)gmail(dot)com)
 
-**afl-cmin-reduce-dataset.diff**			- afl-cmin: rather small dataset of testcase instead of small testcase.  (by legarrec(dot)vincent(at)gmail(dot)com)
+**afl-cmin-reduce-dataset.diff**		- afl-cmin: rather small dataset of testcase instead of small testcase.  (by legarrec(dot)vincent(at)gmail(dot)com)
 
