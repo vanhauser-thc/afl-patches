@@ -1,0 +1,38 @@
+--- afl-2.52b/afl-cmin	2018-04-02 10:44:34.273922652 +0200
++++ afl-2.52b/afl-cmin	2018-04-02 11:25:13.310101247 +0200
+@@ -363,10 +363,7 @@ echo "[+] Found $TUPLE_COUNT unique tupl
+ #####################################
+ 
+ # The next step is to find the best candidate for each tuple. The "best"
+-# part is understood simply as the smallest input that includes a particular
+-# tuple in its trace. Empirical evidence suggests that this produces smaller
+-# datasets than more involved algorithms that could be still pulled off in
+-# a shell script.
++# part is understood simply as the input with the biggest bitmap.
+ 
+ echo "[*] Finding best candidates for each tuple..."
+ 
+@@ -379,7 +376,7 @@ while read -r fn; do
+ 
+   sed "s#\$# $fn#" "$TRACE_DIR/$fn" >>"$TRACE_DIR/.candidate_list"
+ 
+-done < <(ls -rS "$IN_DIR")
++done < <(ls -S "$TRACE_DIR")
+ 
+ echo
+ 
+@@ -387,10 +384,10 @@ echo
+ # STEP 4: LOADING CANDIDATES #
+ ##############################
+ 
+-# At this point, we have a file of tuple-file pairs, sorted by file size
+-# in ascending order (as a consequence of ls -rS). By doing sort keyed
+-# only by tuple (-k 1,1) and configured to output only the first line for
+-# every key (-s -u), we end up with the smallest file for each tuple.
++# At this point, we have a file of tuple-file pairs, sorted by biggest test case
++# By doing sort keyed only by tuple (-k 1,1) and configured to output only the
++# first line for every key (-s -u), we end up with the file with largest
++# bitmap for each tuple. To the dataset will be small in number of files.
+ 
+ echo "[*] Sorting candidate list (be patient)..."
+ 

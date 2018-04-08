@@ -7,6 +7,8 @@ Patches to afl to fix bugs or add enhancements
 
 **afl-llvm-fix.diff**	- aflc-lang: fix to afl llvm for SIGCHLD in the forkserver (by Kuang-che Wu <kcwu(at)csie(dot)org>)
 
+**afl-sort-all_uniq-fix.diff**	- afl-cmin: fix sort (by legarrec(dot)vincent(at)gmail(dot)com)
+
 
 ### Enhancements / Features
 
@@ -17,4 +19,8 @@ Patches to afl to fix bugs or add enhancements
 **afl_qemu_optimize_logconditional.diff**	- afl-qemu: only log destinations of calls and conditional jumps. patch is only for INTEL and ARM. makes it a bit slower but helpful for large targets that fill up the map otherwise (by mh(at)mh-sec(dot)de)
 
 **afl_qemu_optimize_map.diff**			- afl-qemu: removes 2 instructions from afl_log at a cost of 64kb.  (by mh(at)mh-sec(dot)de)
+
+**afl-as-AFL_INST_RATIO.diff**			- afl-afl: do not divise by 3 with sanitizer if AFL_INST_RATIO is manually set.  (by legarrec(dot)vincent(at)gmail(dot)com)
+
+**afl-cmin-reduce-dataset.diff**			- afl-cmin: rather small dataset of testcase instead of small testcase.  (by legarrec(dot)vincent(at)gmail(dot)com)
 
