@@ -22,3 +22,5 @@ Patches to afl to fix bugs or add enhancements
 
 **afl-as-AFL_INST_RATIO.diff**			- afl-afl: do not divise by 3 with sanitizer if AFL_INST_RATIO is manually set.  (by legarrec(dot)vincent(at)gmail(dot)com)
 
+**afl-cmin-reduce-dataset.diff**			- afl-cmin: rather small dataset of testcase instead of small testcase.  (by legarrec(dot)vincent(at)gmail(dot)com)
+
