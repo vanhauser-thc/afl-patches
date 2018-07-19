@@ -16,7 +16,7 @@ Add https://gitlab.com/laf-intel/laf-llvm-pass
 
 ### Fixes
 
-**afl-llvm-fix.diff**		- aflc-lang: fix to afl llvm for SIGCHLD in the forkserver (by Kuang-che Wu <kcwu(at)csie(dot)org>)
+**afl-llvm-fix.diff**		- aflc-lang: fix to afl llvm for SIGCHLD in the forkserver (by kcwu(at)csie(dot)org)
 
 **afl-sort-all_uniq-fix.diff**	- afl-cmin: fix sort (by legarrec(dot)vincent(at)gmail(dot)com)
 
@@ -29,7 +29,7 @@ Add https://gitlab.com/laf-intel/laf-llvm-pass
 
 **afl-tmpfs.diff**				- afl-fuzz: patch that uses tmpfs for the .cur_input file, basically the same idea that my patch uses, but maybe easier. (by jjudin(at)iki(dot)fi)
 
-**afl_qemu_optimize_entrypoint.diff**		- afl-qemu: fixes entrypoint detection for ARM thumb (by Marc Harris <markh(dot)sj(at)gmail(dot)com> plus adds AFL_ENTRYPOINT that lets you specify any point you want for the forkserver (gives more speed) (by mh(at)mh-sec(dot)de)
+**afl_qemu_optimize_entrypoint.diff**		- afl-qemu: fixes entrypoint detection for ARM thumb (by markh(dot)sj(at)gmail(dot)com plus adds AFL_ENTRYPOINT that lets you specify any point you want for the forkserver (gives more speed) (by mh(at)mh-sec(dot)de)
 
 **afl_qemu_optimize_logconditional.diff**	- afl-qemu: only log destinations of calls and conditional jumps. patch is only for INTEL and ARM. makes it a bit slower but helpful for large targets that fill up the map otherwise (by mh(at)mh-sec(dot)de)
 
