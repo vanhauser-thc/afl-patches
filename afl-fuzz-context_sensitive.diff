@@ -1,0 +1,90 @@
+--- ./config.h	2017-11-05 03:24:47.000000000 +0100
++++ ./config.h	2018-07-14 16:40:42.647038619 +0200
+@@ -21,7 +21,7 @@
+ 
+ /* Version string: */
+ 
+-#define VERSION             "2.52b"
++#define VERSION             "2.52c"
+ 
+ /******************************************************
+  *                                                    *
+@@ -313,7 +313,7 @@
+    problems with complex programs). You need to recompile the target binary
+    after changing this - otherwise, SEGVs may ensue. */
+ 
+-#define MAP_SIZE_POW2       16
++#define MAP_SIZE_POW2       18
+ #define MAP_SIZE            (1 << MAP_SIZE_POW2)
+ 
+ /* Maximum allocator request size (keep well under INT_MAX): */
+--- ./llvm_mode/afl-llvm-pass.so.cc	2017-06-23 00:49:06.000000000 +0200
++++ ./llvm_mode/afl-llvm-pass.so.cc	2018-07-14 12:29:50.503792042 +0200
+@@ -104,6 +104,8 @@
+       M, Int32Ty, false, GlobalValue::ExternalLinkage, 0, "__afl_prev_loc",
+       0, GlobalVariable::GeneralDynamicTLSModel, 0, false);
+ 
++  Constant *getCallingContext = M.getOrInsertFunction("__afl_getCallingContext", Int32Ty, Type::getVoidTy(C));
++  
+   /* Instrument all the things! */
+ 
+   int inst_blocks = 0;
+@@ -128,12 +130,17 @@
+       PrevLoc->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
+       Value *PrevLocCasted = IRB.CreateZExt(PrevLoc, IRB.getInt32Ty());
+ 
++      /* get xor'ed call stack. Instrument code with call to runtime to get the call stack */
++      CallInst *getContext = IRB.CreateCall(getCallingContext);
++      getContext->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
++      Value *Context = getContext;
++
+       /* Load SHM pointer */
+ 
+       LoadInst *MapPtr = IRB.CreateLoad(AFLMapPtr);
+       MapPtr->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
+       Value *MapPtrIdx =
+-          IRB.CreateGEP(MapPtr, IRB.CreateXor(PrevLocCasted, CurLoc));
++          IRB.CreateGEP(MapPtr, IRB.CreateXor(IRB.CreateXor(PrevLocCasted, CurLoc), Context));
+ 
+       /* Update bitmap */
+ 
+--- ./llvm_mode/afl-llvm-rt.o.c	2017-02-01 02:59:41.000000000 +0100
++++ ./llvm_mode/afl-llvm-rt.o.c	2018-07-14 13:38:44.140489482 +0200
+@@ -28,6 +28,7 @@
+ #include <unistd.h>
+ #include <string.h>
+ #include <assert.h>
++#include <execinfo.h>
+ 
+ #include <sys/mman.h>
+ #include <sys/shm.h>
+@@ -304,3 +305,29 @@
+   }
+ 
+ }
++
++  /* Construct a stack trace dependent value in order 
++     to assist edge coverage with context sensitivity,
++     see Angora paper for details. This will lead to more
++     entries in the bitmap, so it is advised to
++     use a greater bitmap size (256KB). */
++
++int __afl_getCallingContext(void) {
++  static void *StackTrace[256];
++  int depth = 0;
++  u32 result = 0;
++
++  if (!depth)
++    depth = backtrace(StackTrace, sizeof(StackTrace)/sizeof(void *));
++#ifdef HAVE__UNWIND_BACKTRACE
++  if (!depth)
++    depth = unwindBacktrace(StackTrace, sizeof(StackTrace)/sizeof(void *));
++#endif
++  if (!depth)
++    return result;
++
++  for (int i = 2; i < depth - 2; ++i) {
++    result ^= (u32)( StackTrace[i] );
++  }
++  return result % MAP_SIZE;
++}
