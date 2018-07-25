@@ -19,8 +19,8 @@
  
  /* Maximum allocator request size (keep well under INT_MAX): */
 --- ./llvm_mode/afl-llvm-pass.so.cc	2017-06-23 00:49:06.000000000 +0200
-+++ ./llvm_mode/afl-llvm-pass.so.cc	2018-07-14 12:29:50.503792042 +0200
-@@ -104,6 +104,8 @@
++++ ./llvm_mode/afl-llvm-pass.so.cc	2018-07-24 23:44:48.450352402 +0200
+@@ -104,15 +104,31 @@
        M, Int32Ty, false, GlobalValue::ExternalLinkage, 0, "__afl_prev_loc",
        0, GlobalVariable::GeneralDynamicTLSModel, 0, false);
  
@@ -29,12 +29,35 @@
    /* Instrument all the things! */
  
    int inst_blocks = 0;
-@@ -128,12 +130,17 @@
+ 
+-  for (auto &F : M)
++  for (auto &F : M) {
++    AllocaInst *CallingContext = nullptr;
+     for (auto &BB : F) {
+ 
+       BasicBlock::iterator IP = BB.getFirstInsertionPt();
+       IRBuilder<> IRB(&(*IP));
++      if (&BB == &F.getEntryBlock()) {
++        auto *localVar = IRB.CreateAlloca( IntegerType::getInt32Ty(C), nullptr, "AFL_StackContext");
++        localVar->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
++        CallInst *myCall = IRB.CreateCall(getCallingContext);
++        CallingContext = localVar;
++        Value *context = myCall;
++        StoreInst *storectx = IRB.CreateStore(context, localVar);
++        storectx->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
++        myCall->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
++      }
++      if (CallingContext == nullptr) {
++        break;
++      }
+ 
+       if (AFL_R(100) >= inst_ratio) continue;
+ 
+@@ -128,18 +144,32 @@
        PrevLoc->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
        Value *PrevLocCasted = IRB.CreateZExt(PrevLoc, IRB.getInt32Ty());
  
-+      /* get xor'ed call stack. Instrument code with call to runtime to get the call stack */
-+      CallInst *getContext = IRB.CreateCall(getCallingContext);
++      LoadInst *getContext = IRB.CreateLoad(CallingContext);
 +      getContext->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
 +      Value *Context = getContext;
 +
@@ -42,12 +65,37 @@
  
        LoadInst *MapPtr = IRB.CreateLoad(AFLMapPtr);
        MapPtr->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
++      Value *x1 = IRB.CreateXor(PrevLocCasted, CurLoc);
++      dyn_cast<Instruction>(x1)
++          ->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
++      Value *x2 = IRB.CreateXor(x1, Context);
++      dyn_cast<Instruction>(x2)
++          ->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
        Value *MapPtrIdx =
 -          IRB.CreateGEP(MapPtr, IRB.CreateXor(PrevLocCasted, CurLoc));
-+          IRB.CreateGEP(MapPtr, IRB.CreateXor(IRB.CreateXor(PrevLocCasted, CurLoc), Context));
++          IRB.CreateGEP(MapPtr, x2);
++      dyn_cast<Instruction>(MapPtrIdx)
++          ->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
  
        /* Update bitmap */
  
+       LoadInst *Counter = IRB.CreateLoad(MapPtrIdx);
+       Counter->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
+       Value *Incr = IRB.CreateAdd(Counter, ConstantInt::get(Int8Ty, 1));
++      dyn_cast<Instruction>(Incr)
++          ->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
+       IRB.CreateStore(Incr, MapPtrIdx)
+           ->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
+ 
+@@ -152,7 +182,7 @@
+       inst_blocks++;
+ 
+     }
+-
++  }
+   /* Say something nice. */
+ 
+   if (!be_quiet) {
 --- ./llvm_mode/afl-llvm-rt.o.c	2017-02-01 02:59:41.000000000 +0100
 +++ ./llvm_mode/afl-llvm-rt.o.c	2018-07-14 13:38:44.140489482 +0200
 @@ -28,6 +28,7 @@
