@@ -16,7 +16,9 @@ Add https://gitlab.com/laf-intel/laf-llvm-pass
 
 ### Fixes
 
-**afl-llvm-fix.diff**		- aflc-lang: fix to afl llvm for SIGCHLD in the forkserver (by kcwu(at)csie(dot)org)
+**afl-llvm-fix.diff**		- afl-clang: fix to afl llvm for SIGCHLD in the forkserver (by kcwu(at)csie(dot)org)
+
+**afl-llvm-fix2.diff**		- afl-clang: fix to afl llvm to remove target binary optimisation and use g++ for compiling (needed for LLVM 5.0+) (by mh(at)mh-sec(dot)de)
 
 **afl-sort-all_uniq-fix.diff**	- afl-cmin: fix sort (by legarrec(dot)vincent(at)gmail(dot)com)
 

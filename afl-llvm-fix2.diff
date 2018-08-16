@@ -1,0 +1,22 @@
+--- llvm_mode/Makefile.orig	2018-08-16 14:49:37.150145700 +0200
++++ llvm_mode/Makefile	2018-08-16 14:50:27.850146000 +0200
+@@ -51,7 +52,7 @@
+ 
+ ifeq "$(origin CC)" "default"
+   CC         = clang
+-  CXX        = clang++
++  CXX        = g++
+ endif
+ 
+ ifndef AFL_TRACE_PC
+--- llvm_mode/afl-clang-fast.c.orig	2018-08-16 14:49:43.093745700 +0200
++++ llvm_mode/afl-clang-fast.c	2018-08-16 14:49:52.781345800 +0200
+@@ -208,7 +208,7 @@
+   if (!getenv("AFL_DONT_OPTIMIZE")) {
+ 
+     cc_params[cc_par_cnt++] = "-g";
+-    cc_params[cc_par_cnt++] = "-O3";
++    //cc_params[cc_par_cnt++] = "-O3";
+     cc_params[cc_par_cnt++] = "-funroll-loops";
+ 
+   }
