@@ -39,6 +39,8 @@ Add https://gitlab.com/laf-intel/laf-llvm-pass
 
 **afl_qemu_optimize_map.diff**			- afl-qemu: removes 2 instructions from afl_log at a cost of 64kb.  (by mh(at)mh-sec(dot)de)
 
+**afl-qemu-speed.diff**				- afl-qemu-speed: fixes afl/qemu to allow caching, x3 speed improvement. (by abiondo on github)
+
 **afl-as-AFL_INST_RATIO.diff**			- afl-as: do not divide by 3 with sanitizer if AFL_INST_RATIO is manually set.  (by legarrec(dot)vincent(at)gmail(dot)com)
 
 **afl-cmin-reduce-dataset.diff**		- afl-cmin: rather small dataset of testcase instead of small testcase.  (by legarrec(dot)vincent(at)gmail(dot)com)
