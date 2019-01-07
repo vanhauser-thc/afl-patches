@@ -27,7 +27,7 @@ Add https://gitlab.com/laf-intel/laf-llvm-pass
 
 **afl-fuzz-context_sensitive.diff**		- afl-fuzz: patch that reimplements Angora Fuzzer's context sensitive branch coverage extension. (by heiko(dot)eissfeldt(at)hexco(dot)de)
 
-**afl-llvm-optimize.diff**			- afl-clang-fast/afl-clang-fast++: only instrument block that are relevant, ~5-10%% less blocks to insturment equals more speed and less map pollution. (by mh(at)mh-sec(dot)de)
+**afl-llvm-optimize.diff**			- afl-clang-fast/afl-clang-fast++: only instrument blocks that are relevant, ~5-10%% less blocks to instrument equals more speed and less map pollution. (by mh(at)mh-sec(dot)de)
 
 **afl-fuzz-tmpdir.diff**			- afl-fuzz: patch that adds AFL_TMPDIR where the .cur_input file will be written to. If you do not want your -o folder on a ramdisk this is what you want. (by mh(at)mh-sec(dot)de)
 
