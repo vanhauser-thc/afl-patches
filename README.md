@@ -7,11 +7,6 @@ Patches to afl to fix bugs or add enhancements
 All patches are for the current version afl-2.52b and can be applied in the extracted afl directory (patch -p0 < patch.diff).
 
 
-## Todo
-
-Add https://gitlab.com/laf-intel/laf-llvm-pass
-
-
 ## Patches
 
 ### Fixes
