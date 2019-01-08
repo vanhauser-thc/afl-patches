@@ -1,6 +1,6 @@
-diff -urN afl-2.52b/llvm_mode/afl-clang-fast.c laf-afl/llvm_mode/afl-clang-fast.c
---- afl-2.52b/llvm_mode/afl-clang-fast.c	2017-01-25 03:51:26.000000000 +0100
-+++ laf-afl/llvm_mode/afl-clang-fast.c	2018-12-27 15:23:41.710341000 +0100
+diff -urN ./llvm_mode/afl-clang-fast.c ./llvm_mode/afl-clang-fast.c
+--- ./llvm_mode/afl-clang-fast.c	2017-01-25 03:51:26.000000000 +0100
++++ ./llvm_mode/afl-clang-fast.c	2018-12-27 15:23:41.710341000 +0100
 @@ -119,6 +119,29 @@
  
       http://clang.llvm.org/docs/SanitizerCoverage.html#tracing-pcs-with-guards */
@@ -31,9 +31,9 @@ diff -urN afl-2.52b/llvm_mode/afl-clang-fast.c laf-afl/llvm_mode/afl-clang-fast.
  #ifdef USE_TRACE_PC
    cc_params[cc_par_cnt++] = "-fsanitize-coverage=trace-pc-guard";
    cc_params[cc_par_cnt++] = "-mllvm";
-diff -urN afl-2.52b/llvm_mode/compare-transform-pass.so.cc laf-afl/llvm_mode/compare-transform-pass.so.cc
---- afl-2.52b/llvm_mode/compare-transform-pass.so.cc	1970-01-01 01:00:00.000000000 +0100
-+++ laf-afl/llvm_mode/compare-transform-pass.so.cc	2018-12-27 23:38:44.915723000 +0100
+diff -urN ./llvm_mode/compare-transform-pass.so.cc ./llvm_mode/compare-transform-pass.so.cc
+--- ./llvm_mode/compare-transform-pass.so.cc	1970-01-01 01:00:00.000000000 +0100
++++ ./llvm_mode/compare-transform-pass.so.cc	2018-12-27 23:38:44.915723000 +0100
 @@ -0,0 +1,250 @@
 +/*
 + * Copyright 2016 laf-intel
@@ -285,9 +285,9 @@ diff -urN afl-2.52b/llvm_mode/compare-transform-pass.so.cc laf-afl/llvm_mode/com
 +static RegisterStandardPasses RegisterCompTransPass0(
 +    PassManagerBuilder::EP_EnabledOnOptLevel0, registerCompTransPass);
 +
-diff -urN afl-2.52b/llvm_mode/Makefile laf-afl/llvm_mode/Makefile
---- afl-2.52b/llvm_mode/Makefile	2016-06-24 04:38:49.000000000 +0200
-+++ laf-afl/llvm_mode/Makefile	2018-12-27 15:19:18.086346000 +0100
+diff -urN ./llvm_mode/Makefile ./llvm_mode/Makefile
+--- ./llvm_mode/Makefile	2016-06-24 04:38:49.000000000 +0200
++++ ./llvm_mode/Makefile	2018-12-27 15:19:18.086346000 +0100
 @@ -55,9 +55,9 @@
  endif
  
@@ -317,9 +317,9 @@ diff -urN afl-2.52b/llvm_mode/Makefile laf-afl/llvm_mode/Makefile
  ../afl-llvm-rt.o: afl-llvm-rt.o.c | test_deps
  	$(CC) $(CFLAGS) -fPIC -c $< -o $@
  
-diff -urN afl-2.52b/llvm_mode/split-compares-pass.so.cc laf-afl/llvm_mode/split-compares-pass.so.cc
---- afl-2.52b/llvm_mode/split-compares-pass.so.cc	1970-01-01 01:00:00.000000000 +0100
-+++ laf-afl/llvm_mode/split-compares-pass.so.cc	2018-12-31 10:24:06.608136915 +0100
+diff -urN ./llvm_mode/split-compares-pass.so.cc ./llvm_mode/split-compares-pass.so.cc
+--- ./llvm_mode/split-compares-pass.so.cc	1970-01-01 01:00:00.000000000 +0100
++++ ./llvm_mode/split-compares-pass.so.cc	2018-12-31 10:24:06.608136915 +0100
 @@ -0,0 +1,524 @@
 +/*
 + * Copyright 2016 laf-intel
@@ -845,9 +845,9 @@ diff -urN afl-2.52b/llvm_mode/split-compares-pass.so.cc laf-afl/llvm_mode/split-
 +
 +static RegisterStandardPasses RegisterSplitComparesTransPass0(
 +    PassManagerBuilder::EP_EnabledOnOptLevel0, registerSplitComparesPass);
-diff -urN afl-2.52b/llvm_mode/split-switches-pass.so.cc laf-afl/llvm_mode/split-switches-pass.so.cc
---- afl-2.52b/llvm_mode/split-switches-pass.so.cc	1970-01-01 01:00:00.000000000 +0100
-+++ laf-afl/llvm_mode/split-switches-pass.so.cc	2018-12-31 13:10:42.285053125 +0100
+diff -urN ./llvm_mode/split-switches-pass.so.cc ./llvm_mode/split-switches-pass.so.cc
+--- ./llvm_mode/split-switches-pass.so.cc	1970-01-01 01:00:00.000000000 +0100
++++ ./llvm_mode/split-switches-pass.so.cc	2018-12-31 13:10:42.285053125 +0100
 @@ -0,0 +1,312 @@
 +/*
 + * Copyright 2016 laf-intel
