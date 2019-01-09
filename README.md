@@ -7,11 +7,6 @@ Patches to afl to fix bugs or add enhancements
 All patches are for the current version afl-2.52b and can be applied in the extracted afl directory (patch -p0 < patch.diff).
 
 
-## Todo
-
-Add https://gitlab.com/laf-intel/laf-llvm-pass
-
-
 ## Patches
 
 ### Fixes
@@ -26,6 +21,8 @@ Add https://gitlab.com/laf-intel/laf-llvm-pass
 ### Enhancements / Features
 
 **afl-fuzz-context_sensitive.diff**		- afl-fuzz: patch that reimplements Angora Fuzzer's context sensitive branch coverage extension. (by heiko(dot)eissfeldt(at)hexco(dot)de)
+
+**laf-intel.diff**				- afl-clang-fast/afl-clang-fast++: implements laf-intel (rewriting memcmp/strcmp for easier solving) (by heiko(dot)eissfeldt(at)hexco(dot)de)
 
 **afl-llvm-optimize.diff**			- afl-clang-fast/afl-clang-fast++: only instrument blocks that are relevant, ~5-10%% less blocks to instrument equals more speed and less map pollution. (by mh(at)mh-sec(dot)de)
 
