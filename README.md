@@ -32,11 +32,11 @@ All patches are for the current version afl-2.52b and can be applied in the extr
 
 **afl-fuzz-79x24.diff**                         - afl-fuzz: lower the terminal requirements to 79x24 to display the status screen. (by heiko(dot)eissfeldt(at)hexco(dot)de)
 
-**afl_qemu_optimize_entrypoint.diff**		- afl-qemu: fixes entrypoint detection for ARM thumb (by markh(dot)sj(at)gmail(dot)com plus adds AFL_ENTRYPOINT that lets you specify any point you want for the forkserver (gives more speed) (by mh(at)mh-sec(dot)de)
+**afl-qemu-optimize-entrypoint.diff**		- afl-qemu: fixes entrypoint detection for ARM thumb (by markh(dot)sj(at)gmail(dot)com plus adds AFL_ENTRYPOINT that lets you specify any point you want for the forkserver (gives more speed) (by mh(at)mh-sec(dot)de)
 
-**afl_qemu_optimize_logconditional.diff**	- afl-qemu: only log destinations of calls and conditional jumps. patch is only for INTEL and ARM. makes it a bit slower but helpful for large targets that fill up the map otherwise (by mh(at)mh-sec(dot)de)
+**afl-qemu-optimize-logconditional.diff**	- afl-qemu: only log destinations of calls and conditional jumps. patch is only for INTEL and ARM. makes it a bit slower but helpful for large targets that fill up the map otherwise (by mh(at)mh-sec(dot)de)
 
-**afl_qemu_optimize_map.diff**			- afl-qemu: removes 2 instructions from afl_log at a cost of 64kb.  (by mh(at)mh-sec(dot)de)
+**afl-qemu-optimize-map.diff**			- afl-qemu: removes 2 instructions from afl_log at a cost of 64kb.  (by mh(at)mh-sec(dot)de)
 
 **afl-qemu-speed.diff**				- afl-qemu: fixes afl/qemu to allow caching, x3 speed improvement. (by abiondo on github)
 

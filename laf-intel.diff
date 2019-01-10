@@ -1,6 +1,6 @@
 diff -urN ./laf-intel.usage ./laf-intel.usage
---- ./laf-intel.usage	1970-01-01 01:00:00.000000000 +0100
-+++ ./laf-intel.usage	2019-01-09 21:41:01.928365797 +0100
+--- ./llvm_mode/README.laf-intel	1970-01-01 01:00:00.000000000 +0100
++++ ./llvm_mode/README.laf-intel	2019-01-09 21:41:01.928365797 +0100
 @@ -0,0 +1,13 @@
 +Usage
 +By default the passes will not run when you compile programs using
