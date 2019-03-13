@@ -32,6 +32,8 @@ All patches are for the current version afl-2.52b and can be applied in the extr
 
 **afl-fuzz-79x24.diff**                         - afl-fuzz: lower the terminal requirements to 79x24 to display the status screen. (by heiko(dot)eissfeldt(at)hexco(dot)de)
 
+**afl-fuzz-fileextensionopt.diff**		- afl-fuzz: cmdline option to force the input file to have a specific extension
+
 **afl-qemu-optimize-entrypoint.diff**		- afl-qemu: fixes entrypoint detection for ARM thumb (by markh(dot)sj(at)gmail(dot)com plus adds AFL_ENTRYPOINT that lets you specify any point you want for the forkserver (gives more speed) (by mh(at)mh-sec(dot)de)
 
 **afl-qemu-optimize-logconditional.diff**	- afl-qemu: only log destinations of calls and conditional jumps. patch is only for INTEL and ARM. makes it a bit slower but helpful for large targets that fill up the map otherwise (by mh(at)mh-sec(dot)de)

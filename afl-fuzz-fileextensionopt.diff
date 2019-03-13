@@ -1,0 +1,87 @@
+diff --git ./afl-fuzz.c ./afl-fuzz.c
+index 112180f..4108f8a 100644
+--- ./afl-fuzz.c
++++ ./afl-fuzz.c
+@@ -92,6 +92,7 @@ EXP_ST u8 *in_dir,                    /* Input directory with test cases  */
+           *doc_path,                  /* Path to documentation dir        */
+           *target_path,               /* Path to target binary            */
+           *orig_cmdline,              /* Original command line            */
++          *file_extension,            /* File extension                   */
+           *input_model_file;          /* Input model file                 */
+ 
+ EXP_ST u32 exec_tmout = EXEC_TIMEOUT; /* Configurable exec timeout (ms)   */
+@@ -3976,8 +3977,11 @@ static void maybe_delete_out_dir(void) {
+   ck_free(fn);
+ 
+   /* And now, for some finishing touches. */
+-
+-  fn = alloc_printf("%s/.cur_input", out_dir);
++  if(file_extension) {
++    fn = alloc_printf("%s/.cur_input.%s", out_dir, file_extension);
++  } else {
++    fn = alloc_printf("%s/.cur_input", out_dir);
++  }
+   if (unlink(fn) && errno != ENOENT) goto dir_cleanup_failed;
+   ck_free(fn);
+ 
+@@ -8094,6 +8098,7 @@ static void usage(u8* argv0) {
+        "  -h            - mix higher-order mutations with other mutations\n"
+        "  -l            - log input model mutations in log/<pid>.log of the output directory\n"
+        "  -H number     - Apply a maximum on the number of higher-order mutations\n\n"
++       "  -e ext        - File extension for the temporarily generated test case\n\n"
+ 
+        "For additional tips, please consult %s/README.\n\n",
+ 
+@@ -8237,7 +8242,12 @@ EXP_ST void setup_dirs_fds(void) {
+ 
+ EXP_ST void setup_stdio_file(void) {
+ 
+-  u8* fn = alloc_printf("%s/.cur_input", out_dir);
++  u8* fn;
++  if (file_extension) {
++    fn = alloc_printf("%s/.cur_input.%s", out_dir, file_extension);
++  } else {
++    fn = alloc_printf("%s/.cur_input", out_dir);
++  }
+ 
+   unlink(fn); /* Ignore errors */
+ 
+@@ -8558,8 +8568,13 @@ EXP_ST void detect_file_args(char** argv) {
+ 
+       /* If we don't have a file name chosen yet, use a safe default. */
+ 
+-      if (!out_file)
+-        out_file = alloc_printf("%s/.cur_input", out_dir);
++      if (!out_file) {
++        if (file_extension) {
++            out_file = alloc_printf("%s/.cur_input.%s", out_dir, file_extension);
++        } else {
++            out_file = alloc_printf("%s/.cur_input", out_dir);
++        }
++      }
+ 
+       /* Be sure that we're always using fully-qualified paths. */
+ 
+@@ -8754,7 +8769,7 @@ int main(int argc, char **argv) {
+   gettimeofday(&tv, &tz);
+   srandom(tv.tv_sec ^ tv.tv_usec ^ getpid());
+ 
+-  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Qw:g:lhH:")) > 0)
++  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Qw:g:lhH:e:")) > 0)
+ 
+     switch (opt) {
+ 
+@@ -8972,6 +8987,13 @@ int main(int argc, char **argv) {
+         if (errno) FATAL("Numeric format error of -H option");
+ 
+         break;
++
++      case 'e':
++        if (file_extension) FATAL("Multiple -e options not supported");
++
++        file_extension = optarg;
++
++        break;
+       default:
+ 
+         usage(argv[0]);
