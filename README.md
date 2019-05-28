@@ -8,7 +8,9 @@ All patches are for the current version afl-2.52b and can be applied in the extr
 
 NOTE: all patches are stand-alone. Hence several conflict with each other.
 To ease the pain, there is now AFLplusplus which is afl-2.52b with most of the patches here incorporated:
-https:/github.com/vanhauser-thc/AFLplusplus
+
+**https:/github.com/vanhauser-thc/AFLplusplus**
+
 
 
 ## Patches
