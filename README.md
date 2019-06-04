@@ -11,6 +11,7 @@ To ease the pain, there is now AFLplusplus which is afl-2.52b with most of the p
 
 **https://github.com/vanhauser-thc/AFLplusplus**
 
+Additionally it has been upgraded to use qemu 3.1 and supports llvm 3.8 to 8. Enjoy!
 
 
 ## Patches
