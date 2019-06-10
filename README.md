@@ -24,6 +24,8 @@ Additionally it has been upgraded to use qemu 3.1 and supports llvm 3.8 to 8. En
 
 **afl-sort-all_uniq-fix.diff**	- afl-cmin: fix sort (by legarrec(dot)vincent(at)gmail(dot)com)
 
+**llvm_versions_gt_4.diff**	- llvm_mode: fix crash when clang (with llvm version > 4.x) loads compiler pass (by heiko(dot)eissfeldt(at)hexco(dot).de)
+
 
 ### Enhancements / Features
 
