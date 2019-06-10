@@ -1,0 +1,11 @@
+--- ./llvm_mode/Makefile	2016-06-24 04:38:49.000000000 +0200
++++ ./llvm_mode/Makefile	2019-06-10 21:59:57.584265630 +0200
+@@ -36,7 +36,7 @@
+ CXXFLAGS    += -Wall -D_FORTIFY_SOURCE=2 -g -Wno-pointer-sign \
+                -DVERSION=\"$(VERSION)\" -Wno-variadic-macros
+ 
+-CLANG_CFL    = `$(LLVM_CONFIG) --cxxflags` -fno-rtti -fpic $(CXXFLAGS)
++CLANG_CFL    = `$(LLVM_CONFIG) --cxxflags` -Wl,-znodelete -fno-rtti -fpic $(CXXFLAGS)
+ CLANG_LFL    = `$(LLVM_CONFIG) --ldflags` $(LDFLAGS)
+ 
+ # User teor2345 reports that this is required to make things work on MacOS X.
