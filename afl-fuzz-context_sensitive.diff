@@ -1,6 +1,6 @@
 diff -ur afl-2.52b_Original/config.h afl-2.52b_Context/config.h
---- afl-2.52b_Original/config.h	2017-11-05 03:24:47.000000000 +0100
-+++ afl-2.52b_Context/config.h	2019-02-07 22:40:58.152498335 +0100
+--- ./config.h	2017-11-05 03:24:47.000000000 +0100
++++ ./config.h	2019-02-07 22:40:58.152498335 +0100
 @@ -21,7 +21,7 @@
  
  /* Version string: */
@@ -20,8 +20,8 @@ diff -ur afl-2.52b_Original/config.h afl-2.52b_Context/config.h
  
  /* Maximum allocator request size (keep well under INT_MAX): */
 diff -ur afl-2.52b_Original/llvm_mode/afl-llvm-pass.so.cc afl-2.52b_Context/llvm_mode/afl-llvm-pass.so.cc
---- afl-2.52b_Original/llvm_mode/afl-llvm-pass.so.cc	2017-06-23 00:49:06.000000000 +0200
-+++ afl-2.52b_Context/llvm_mode/afl-llvm-pass.so.cc	2019-06-10 21:51:21.248256045 +0200
+--- ./llvm_mode/afl-llvm-pass.so.cc	2017-06-23 00:49:06.000000000 +0200
++++ ./llvm_mode/afl-llvm-pass.so.cc	2019-06-10 21:51:21.248256045 +0200
 @@ -104,15 +104,35 @@
        M, Int32Ty, false, GlobalValue::ExternalLinkage, 0, "__afl_prev_loc",
        0, GlobalVariable::GeneralDynamicTLSModel, 0, false);
@@ -103,8 +103,8 @@ diff -ur afl-2.52b_Original/llvm_mode/afl-llvm-pass.so.cc afl-2.52b_Context/llvm
  
    if (!be_quiet) {
 diff -ur afl-2.52b_Original/llvm_mode/afl-llvm-rt.o.c afl-2.52b_Context/llvm_mode/afl-llvm-rt.o.c
---- afl-2.52b_Original/llvm_mode/afl-llvm-rt.o.c	2017-02-01 02:59:41.000000000 +0100
-+++ afl-2.52b_Context/llvm_mode/afl-llvm-rt.o.c	2019-02-07 22:40:58.152498335 +0100
+--- ./llvm_mode/afl-llvm-rt.o.c	2017-02-01 02:59:41.000000000 +0100
++++ ./llvm_mode/afl-llvm-rt.o.c	2019-02-07 22:40:58.152498335 +0100
 @@ -28,6 +28,7 @@
  #include <unistd.h>
  #include <string.h>
