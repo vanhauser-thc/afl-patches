@@ -1,5 +1,6 @@
---- ./config.h	2017-11-05 03:24:47.000000000 +0100
-+++ ./config.h	2018-07-14 16:40:42.647038619 +0200
+diff -ur afl-2.52b_Original/config.h afl-2.52b_Context/config.h
+--- afl-2.52b_Original/config.h	2017-11-05 03:24:47.000000000 +0100
++++ afl-2.52b_Context/config.h	2019-02-07 22:40:58.152498335 +0100
 @@ -21,7 +21,7 @@
  
  /* Version string: */
@@ -18,13 +19,18 @@
  #define MAP_SIZE            (1 << MAP_SIZE_POW2)
  
  /* Maximum allocator request size (keep well under INT_MAX): */
---- ./llvm_mode/afl-llvm-pass.so.cc	2017-06-23 00:49:06.000000000 +0200
-+++ ./llvm_mode/afl-llvm-pass.so.cc	2018-07-24 23:44:48.450352402 +0200
-@@ -104,15 +104,31 @@
+diff -ur afl-2.52b_Original/llvm_mode/afl-llvm-pass.so.cc afl-2.52b_Context/llvm_mode/afl-llvm-pass.so.cc
+--- afl-2.52b_Original/llvm_mode/afl-llvm-pass.so.cc	2017-06-23 00:49:06.000000000 +0200
++++ afl-2.52b_Context/llvm_mode/afl-llvm-pass.so.cc	2019-06-10 21:51:21.248256045 +0200
+@@ -104,15 +104,35 @@
        M, Int32Ty, false, GlobalValue::ExternalLinkage, 0, "__afl_prev_loc",
        0, GlobalVariable::GeneralDynamicTLSModel, 0, false);
  
-+  Constant *getCallingContext = M.getOrInsertFunction("__afl_getCallingContext", Int32Ty, Type::getVoidTy(C));
++  Constant *getCallingContext = M.getOrInsertFunction("__afl_getCallingContext", Int32Ty, Type::getVoidTy(C)
++#if __LLVM_MAJOR_VERSION__ < 5
++  ,nullptr
++#endif
++);
 +  
    /* Instrument all the things! */
  
@@ -53,7 +59,7 @@
  
        if (AFL_R(100) >= inst_ratio) continue;
  
-@@ -128,18 +144,32 @@
+@@ -128,18 +148,32 @@
        PrevLoc->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
        Value *PrevLocCasted = IRB.CreateZExt(PrevLoc, IRB.getInt32Ty());
  
@@ -87,7 +93,7 @@
        IRB.CreateStore(Incr, MapPtrIdx)
            ->setMetadata(M.getMDKindID("nosanitize"), MDNode::get(C, None));
  
-@@ -152,7 +182,7 @@
+@@ -152,7 +186,7 @@
        inst_blocks++;
  
      }
@@ -96,8 +102,9 @@
    /* Say something nice. */
  
    if (!be_quiet) {
---- ./llvm_mode/afl-llvm-rt.o.c	2017-02-01 02:59:41.000000000 +0100
-+++ ./llvm_mode/afl-llvm-rt.o.c	2018-07-14 13:38:44.140489482 +0200
+diff -ur afl-2.52b_Original/llvm_mode/afl-llvm-rt.o.c afl-2.52b_Context/llvm_mode/afl-llvm-rt.o.c
+--- afl-2.52b_Original/llvm_mode/afl-llvm-rt.o.c	2017-02-01 02:59:41.000000000 +0100
++++ afl-2.52b_Context/llvm_mode/afl-llvm-rt.o.c	2019-02-07 22:40:58.152498335 +0100
 @@ -28,6 +28,7 @@
  #include <unistd.h>
  #include <string.h>
