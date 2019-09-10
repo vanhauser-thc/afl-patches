@@ -2,6 +2,16 @@
 Patches to afl to fix bugs or add enhancements
 
 
+## ARCHIVE
+
+This github repository is archived as it serves no real purpose anymore as we have now afl+ü
+which has all these patches plus many more great features:
+
+**https://github.com/vanhauser-thc/AFLplusplus**
+
+
+
+
 ## Introduction
 
 All patches are for the current version afl-2.52b and can be applied in the extracted afl directory (patch -p0 < patch.diff).
